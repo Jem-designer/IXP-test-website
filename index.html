@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IXP Research Assistant</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :root {
+      --black:   #07001f;
+      --black2:  #0d0030;
+      --purple:  #5A5AFF;
+      --purple2: #9090FF;
+      --purple3: #D8D8FF;
+      --green:   #3dfd98;
+      --green2:  #8dfdc3;
+      --white:   #ffffff;
+      --muted:   #757575;
+      --card-bg: rgba(255,255,255,0.04);
+      --card-border: rgba(255,255,255,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: var(--black);
+      color: var(--white);
+      font-size: 1rem;
+      line-height: 1.6;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(7, 0, 31, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .nav-inner {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--white);
+    }
+
+    .nav-logo-mark {
+      width: 32px; height: 32px;
+      background: var(--purple);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--white); }
+
+    .nav-cta {
+      background: var(--purple) !important;
+      color: var(--white) !important;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 600 !important;
+    }
+
+    .nav-cta:hover { opacity: 0.88; }
+
+    .nav-logo img, .footer-logo img {
+      filter: brightness(0) invert(1);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 160px 32px 100px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -40px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(90,90,255,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(90,90,255,0.15);
+      border: 1px solid rgba(90,90,255,0.3);
+      border-radius: 100px;
+      padding: 5px 16px;
+      font-size: 13px;
+      color: var(--purple2);
+      margin-bottom: 32px;
+    }
+
+    .hero-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      max-width: 800px;
+      margin: 0 auto 24px;
+    }
+
+    .hero h1 .accent-purple { color: var(--purple2); }
+    .hero h1 .accent-green  { color: var(--green); }
+
+    .hero-sub {
+      font-size: 18px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 560px;
+      margin: 0 auto 48px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 80px;
+    }
+
+    .btn-primary {
+      background: var(--purple);
+      color: var(--white);
+      padding: 13px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--white);
+      padding: 13px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      border: 1px solid var(--card-border);
+      transition: border-color 0.2s;
+    }
+
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.25); }
+
+    /* Hero mockup card */
+    .hero-mockup {
+      max-width: 860px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 80px rgba(90,90,255,0.15);
+    }
+
+    .mockup-bar {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .mdot { width: 11px; height: 11px; border-radius: 50%; }
+    .mdot-r { background: #ff5f57; }
+    .mdot-y { background: #ffbd2e; }
+    .mdot-g { background: #28c840; }
+
+    .mockup-body {
+      padding: 32px 36px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .mockup-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .mockup-icon {
+      width: 36px; height: 36px;
+      background: rgba(90,90,255,0.2);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .mockup-icon svg { width: 18px; height: 18px; }
+
+    .mockup-card h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .mockup-card p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .mockup-stat {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--green);
+      margin-top: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    /* ── FEATURE ROWS ── */
+    .features-rows {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 100px 32px;
+    }
+
+    .section-eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--purple2);
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      font-size: 17px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 520px;
+      margin-bottom: 64px;
+    }
+
+    .feat-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      margin-bottom: 80px;
+    }
+
+    .feat-row.reverse { direction: rtl; }
+    .feat-row.reverse > * { direction: ltr; }
+
+    .feat-text {}
+
+    .feat-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(90,90,255,0.15);
+      border: 1px solid rgba(90,90,255,0.3);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--purple2);
+      margin-bottom: 20px;
+    }
+
+    .feat-text h3 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      letter-spacing: -0.5px;
+    }
+
+    .feat-text p {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .feat-visual {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 32px;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feat-visual::before {
+      content: '';
+      position: absolute;
+      bottom: -40px; right: -40px;
+      width: 180px; height: 180px;
+      background: radial-gradient(circle, rgba(90,90,255,0.12) 0%, transparent 70%);
+    }
+
+    .feat-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(61,253,152,0.1);
+      border: 1px solid rgba(61,253,152,0.2);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--green2);
+      width: fit-content;
+    }
+
+    .feat-tag-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .feat-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .feat-bar-label {
+      font-size: 12px;
+      color: var(--muted);
+      width: 90px;
+      flex-shrink: 0;
+    }
+
+    .feat-bar-track {
+      flex: 1;
+      height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .feat-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--purple), var(--green));
+    }
+
+    .feat-bar-val {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--white);
+      width: 30px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ── PLANS ── */
+    .plans {
+      padding: 100px 32px;
+      background: var(--black2);
+      border-top: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .plans-inner {
+      max-width: 1140px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 56px;
+      text-align: left;
+    }
+
+    .plan-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 36px 32px;
+      position: relative;
+    }
+
+    .plan-card.featured {
+      background: var(--purple);
+      border-color: var(--purple);
+    }
+
+    .plan-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--green);
+      color: var(--black);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .plan-name {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .plan-card.featured .plan-name { color: rgba(255,255,255,0.7); }
+
+    .plan-price {
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      margin-bottom: 4px;
+    }
+
+    .plan-period {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .plan-card.featured .plan-period { color: rgba(255,255,255,0.65); }
+
+    .plan-divider {
+      height: 1px;
+      background: var(--card-border);
+      margin-bottom: 24px;
+    }
+
+    .plan-card.featured .plan-divider { background: rgba(255,255,255,0.2); }
+
+    .plan-features {
+      list-style: none;
+      margin-bottom: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .plan-features li {
+      font-size: 14px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .plan-card.featured .plan-features li { color: rgba(255,255,255,0.8); }
+
+    .plan-check {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: rgba(61,253,152,0.15);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .plan-card.featured .plan-check { background: rgba(255,255,255,0.2); }
+
+    .plan-check svg { width: 10px; height: 10px; }
+
+    .btn-plan {
+      display: block;
+      text-align: center;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .btn-plan-outline {
+      border: 1px solid var(--card-border);
+      color: var(--white);
+    }
+
+    .btn-plan-outline:hover { border-color: rgba(255,255,255,0.3); }
+
+    .btn-plan-white {
+      background: var(--white);
+      color: var(--purple);
+    }
+
+    .btn-plan-white:hover { opacity: 0.88; }
+
+    /* ── STATS ── */
+    .stats {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 100px 32px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      background: var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+
+    .stat-item {
+      background: var(--black);
+      padding: 48px 36px;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 48px;
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .stat-num.c-green  { color: var(--green); }
+    .stat-num.c-purple { color: var(--purple2); }
+    .stat-num.c-white  { color: var(--white); }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* ── TESTIMONIAL ── */
+    .testimonial {
+      padding: 100px 32px;
+      text-align: center;
+      background: var(--black2);
+      border-top: 1px solid var(--card-border);
+    }
+
+    .testimonial blockquote {
+      font-size: clamp(18px, 2.5vw, 26px);
+      font-weight: 600;
+      line-height: 1.55;
+      max-width: 720px;
+      margin: 0 auto 36px;
+      color: var(--white);
+    }
+
+    .t-author {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .t-avatar {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: rgba(90,90,255,0.25);
+      border: 1px solid rgba(90,90,255,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--purple2);
+    }
+
+    .t-name { font-size: 14px; font-weight: 600; }
+    .t-role { font-size: 13px; color: var(--muted); }
+
+    /* ── CTA ── */
+    .cta-section {
+      padding: 120px 32px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: 50%; transform: translateX(-50%);
+      width: 700px; height: 400px;
+      background: radial-gradient(ellipse, rgba(61,253,152,0.08) 0%, rgba(90,90,255,0.1) 40%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-section h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+    }
+
+    .cta-section p {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 460px;
+      margin: 0 auto 44px;
+    }
+
+    .cta-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 56px 32px 40px;
+    }
+
+    .footer-inner {
+      max-width: 1140px;
+      margin: 0 auto;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+
+    .footer-brand p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 260px;
+    }
+
+    .footer-col h5 {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+
+    .footer-col ul { list-style: none; }
+    .footer-col ul li + li { margin-top: 12px; }
+
+    .footer-col ul a {
+      font-size: 14px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-col ul a:hover { color: var(--white); }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 28px;
+      border-top: 1px solid var(--card-border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-bottom p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .mockup-body { grid-template-columns: 1fr; }
+      .feat-row, .feat-row.reverse { grid-template-columns: 1fr; direction: ltr; }
+      .plans-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      .nav-links { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      .hero { padding: 120px 20px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <img src="brand_asset/brand_logo.png" alt="IXP Research Assistant" style="height:36px;">
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#plans">Plans</a></li>
+        <li><a href="#community">Community</a></li>
+        <li><a href="#join" class="nav-cta">Get access</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <div class="hero-dot"></div>
+      Now available across PPP
+    </div>
+    <h1>Design smarter,<br><span class="accent-purple">together</span></h1>
+    <p class="hero-sub">A shared capability that turns insights into better, faster, and more human-centred service experiences across PPP.</p>
+    <div class="hero-actions">
+      <a href="#join" class="btn-primary">Get early access</a>
+      <a href="#features" class="btn-ghost">See how it works</a>
+    </div>
+
+    <div class="hero-mockup">
+      <div class="mockup-bar">
+        <div class="mdot mdot-r"></div>
+        <div class="mdot mdot-y"></div>
+        <div class="mdot mdot-g"></div>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-card">
+          <div class="mockup-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#9090FF" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+          </div>
+          <h4>Research Discovery</h4>
+          <p>Synthesise past and present insights in seconds.</p>
+          <div class="mockup-stat">2.4k+</div>
+        </div>
+        <div class="mockup-card">
+          <div class="mockup-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#9090FF" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <h4>Community Knowledge</h4>
+          <p>Connect with researchers and designers across teams.</p>
+          <div class="mockup-stat">380+</div>
+        </div>
+        <div class="mockup-card">
+          <div class="mockup-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#9090FF" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <h4>Impact Tracked</h4>
+          <p>Measure how insights shape service decisions.</p>
+          <div class="mockup-stat">94%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features-rows" id="features">
+    <div class="section-eyebrow">What we offer</div>
+    <h2 class="section-title">Everything you need<br>to research smarter</h2>
+    <p class="section-sub">IXP Research Assistant brings together tools, knowledge, and community to accelerate human-centred design across PPP.</p>
+
+    <div class="feat-row">
+      <div class="feat-text">
+        <div class="feat-num">01</div>
+        <h3>Insight Repository</h3>
+        <p>A centralised, searchable library of past research. Stop duplicating work — build on what your colleagues already know. Tag themes, filter by team, and surface relevant findings instantly.</p>
+      </div>
+      <div class="feat-visual">
+        <div class="feat-tag"><div class="feat-tag-dot"></div>2,400+ insights indexed</div>
+        <div class="feat-bar-row">
+          <div class="feat-bar-label">Service Design</div>
+          <div class="feat-bar-track"><div class="feat-bar-fill" style="width:82%"></div></div>
+          <div class="feat-bar-val">82%</div>
+        </div>
+        <div class="feat-bar-row">
+          <div class="feat-bar-label">Policy</div>
+          <div class="feat-bar-track"><div class="feat-bar-fill" style="width:64%"></div></div>
+          <div class="feat-bar-val">64%</div>
+        </div>
+        <div class="feat-bar-row">
+          <div class="feat-bar-label">Innovation</div>
+          <div class="feat-bar-track"><div class="feat-bar-fill" style="width:47%"></div></div>
+          <div class="feat-bar-val">47%</div>
+        </div>
+        <div class="feat-bar-row">
+          <div class="feat-bar-label">Digital Exp.</div>
+          <div class="feat-bar-track"><div class="feat-bar-fill" style="width:91%"></div></div>
+          <div class="feat-bar-val">91%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feat-row reverse">
+      <div class="feat-text">
+        <div class="feat-num">02</div>
+        <h3>Community Discussion</h3>
+        <p>Ask questions, share learnings, and get peer input from a growing network of researchers and designers across the organisation. Stop working in silos — start building on each other.</p>
+      </div>
+      <div class="feat-visual">
+        <div class="feat-tag"><div class="feat-tag-dot"></div>380+ active members</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+          <div style="background:rgba(255,255,255,0.05);border:1px solid var(--card-border);border-radius:10px;padding:14px 16px;">
+            <div style="font-size:12px;font-weight:600;margin-bottom:4px;">How do you handle participant dropout?</div>
+            <div style="font-size:11px;color:var(--muted);">12 replies · Service Design team</div>
+          </div>
+          <div style="background:rgba(90,90,255,0.1);border:1px solid rgba(90,90,255,0.25);border-radius:10px;padding:14px 16px;">
+            <div style="font-size:12px;font-weight:600;margin-bottom:4px;">Sharing: remote usability testing kit</div>
+            <div style="font-size:11px;color:var(--muted);">34 saves · Digital Experience</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feat-row">
+      <div class="feat-text">
+        <div class="feat-num">03</div>
+        <h3>Impact Dashboard</h3>
+        <p>Track how insights are being used in decision-making. Demonstrate the value of research investment to stakeholders — with evidence, not anecdote.</p>
+      </div>
+      <div class="feat-visual">
+        <div class="feat-tag"><div class="feat-tag-dot"></div>94% reuse rate</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">
+          <div style="text-align:center;">
+            <div style="font-size:32px;font-weight:800;color:var(--green);letter-spacing:-1px;">+50%</div>
+            <div style="font-size:11px;color:var(--muted);">faster delivery</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:32px;font-weight:800;color:var(--purple2);letter-spacing:-1px;">60+</div>
+            <div style="font-size:11px;color:var(--muted);">teams onboard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLANS -->
+  <section class="plans" id="plans">
+    <div class="plans-inner">
+      <div class="section-eyebrow">Access</div>
+      <h2 class="section-title">The right plan for your team</h2>
+      <p class="section-sub" style="margin:0 auto 0;max-width:480px;">From individual contributors to entire divisions, IXP Research scales with how your team works.</p>
+      <div class="plans-grid">
+        <div class="plan-card">
+          <div class="plan-name">Individual</div>
+          <div class="plan-price">Free</div>
+          <div class="plan-period">For public servants getting started</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li><div class="plan-check"><svg viewBox="0 0 12 12" fill="none" stroke="#3dfd98" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg></div>Search the insight library</li>
+            <li><div class="plan-check"><svg viewBox="0 0 12 12" fill="none" stroke="#3dfd98" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg></div>Join community discussions</li>
+            <li><div class="plan-check"><svg viewBox="0 0 12 12" fill="none" stroke="#3dfd98" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg></div>Access research templates</li>
+            <li><div class="plan-check"><svg viewBox="0 0 12 12" fill="none" stroke="#3dfd98" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg></div>Up to 5 uploads / month</li>
+          </ul>
+          <a href="#join" class="btn-plan btn-plan-outline">Request access</a>
+        </div>
+
+        <div class="plan-card featured">
+          <div class="plan-badge">Most popular</div>
+          <div class="plan-name">Team</div>
+          <div class="plan-price">Contact us</div>
+          <div class="plan-period">For cross-functional research teams</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li><div class="plan-check"><svg viewBox="0 0 12 12" fill="none" stroke="#3dfd98" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg></div>Everything in Individual</li>
+            <li><div class="plan-check"><svg viewBox="0 0 12 12" fill="none" stroke="#3dfd98" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg></div>Unlimited uploads & tagging</li>
+            <li><div class="plan-check"><svg viewBox="0 0 12 12" fill="none" stroke="#3dfd98" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg></div>Team impact dashboard</li>
+            <li><div class="plan-check"><svg viewBox="0 0 12 12" fill="none" stroke="#3dfd98" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg></div>Priority onboarding support</li>
+          </ul>
+          <a href="#join" class="btn-plan btn-plan-white">Get in touch</a>
+        </div>
+
+        <div class="plan-card">
+          <div class="plan-name">Division</div>
+          <div class="plan-price">Enterprise</div>
+          <div class="plan-period">For whole divisions or agencies</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li><div class="plan-check"><svg viewBox="0 0 12 12" fill="none" stroke="#3dfd98" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg></div>Everything in Team</li>
+            <li><div class="plan-check"><svg viewBox="0 0 12 12" fill="none" stroke="#3dfd98" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg></div>Custom integrations</li>
+            <li><div class="plan-check"><svg viewBox="0 0 12 12" fill="none" stroke="#3dfd98" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg></div>Dedicated success manager</li>
+            <li><div class="plan-check"><svg viewBox="0 0 12 12" fill="none" stroke="#3dfd98" stroke-width="2"><polyline points="2 6 5 9 10 3"/></svg></div>SLA & compliance support</li>
+          </ul>
+          <a href="#join" class="btn-plan btn-plan-outline">Talk to us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-num c-green">+50%</div>
+        <div class="stat-label">Faster time to insight</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num c-white">2,400+</div>
+        <div class="stat-label">Research insights catalogued</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num c-purple">40%</div>
+        <div class="stat-label">Reduction in duplicated research</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num c-green">94%</div>
+        <div class="stat-label">Research reuse rate</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIAL -->
+  <section class="testimonial">
+    <blockquote>
+      "IXP Research Assistant changed how our team approaches service design. We now build on shared knowledge rather than starting from scratch every time."
+    </blockquote>
+    <div class="t-author">
+      <div class="t-avatar">S</div>
+      <div>
+        <div class="t-name">Sarah Tan</div>
+        <div class="t-role">Senior Service Designer, Digital Experience</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section" id="join">
+    <div class="section-eyebrow">Get started</div>
+    <h2>Ready to design smarter?</h2>
+    <p>Join the IXP Research Assistant community and start turning insights into better services today.</p>
+    <div class="cta-actions">
+      <a href="#" class="btn-primary">Request access</a>
+      <a href="#" class="btn-ghost">Learn more</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="#" class="footer-logo">
+            <img src="brand_asset/brand_logo.png" alt="IXP Research Assistant" style="height:40px;">
+          </a>
+          <p>A shared capability that turns insights into better, faster, and more human-centred service experiences across PPP.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Product</h5>
+          <ul>
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Insight Library</a></li>
+            <li><a href="#">Templates</a></li>
+            <li><a href="#">Roadmap</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Community</h5>
+          <ul>
+            <li><a href="#">Members</a></li>
+            <li><a href="#">Discussions</a></li>
+            <li><a href="#">Events</a></li>
+            <li><a href="#">Newsletter</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Resources</h5>
+          <ul>
+            <li><a href="#">Research Guide</a></li>
+            <li><a href="#">Ethics Framework</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 IXP Research Assistant. All rights reserved.</p>
+        <p>Designing Smarter, Together</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
