@@ -174,17 +174,23 @@
     }
 
     .btn-primary {
-      background: var(--purple);
+      background: linear-gradient(135deg, #6c6cff 0%, #a78bfa 100%);
       color: var(--white);
-      padding: 13px 28px;
+      padding: 14px 32px;
       border-radius: 10px;
       font-size: 15px;
       font-weight: 600;
       text-decoration: none;
-      transition: opacity 0.2s, transform 0.15s;
+      letter-spacing: 0.01em;
+      box-shadow: 0 0 18px rgba(108, 108, 255, 0.55), 0 0 40px rgba(108, 108, 255, 0.25), inset 0 1px 0 rgba(255,255,255,0.15);
+      transition: box-shadow 0.25s, transform 0.15s, background 0.25s;
+      position: relative;
     }
 
-    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 28px rgba(108, 108, 255, 0.75), 0 0 60px rgba(108, 108, 255, 0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
 
     .btn-ghost {
       background: transparent;
